@@ -1,0 +1,15 @@
+ bin/
+ obj/
+ *.user
+ *.suo
+ *.vs
+ .vs/
+
+ # NuGet packages
+ packages/
+
+ # ASP.NET Core specific
+ wwwroot/lib/
+
+ # Ignore appsettings.json if it contains sensitive data (optional)
+ # appsettings.json
