@@ -1,0 +1,102 @@
+2025-08-06 12:01:13.372 +04:30 [ERR] Hosting failed to start
+System.IO.IOException: Failed to bind to address http://127.0.0.1:5148: address already in use.
+ ---> Microsoft.AspNetCore.Connections.AddressInUseException: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+ ---> System.Net.Sockets.SocketException (10048): Only one usage of each socket address (protocol/network address/port) is normally permitted.
+   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, Boolean disconnectOnFailure, String callerName)
+   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.Sockets.Socket.Bind(EndPoint localEP)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportOptions.CreateDefaultBoundListenSocket(EndPoint endpoint)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportFactory.BindAsync(EndPoint endpoint, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure.TransportManager.BindAsync(EndPoint endPoint, ConnectionDelegate connectionDelegate, EndpointConfig endpointConfig, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.<>c__DisplayClass28_0`1.<<StartAsync>g__OnBind|0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.LocalhostListenOptions.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.AddressesStrategy.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.BindAsync(CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__14_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+2025-08-06 12:01:30.519 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:01:30.547 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:01:30.547 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:01:30.547 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:02:21.699 +04:30 [INF] Application is shutting down...
+2025-08-06 12:02:27.235 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:02:27.264 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:02:27.265 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:02:27.265 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:02:40.731 +04:30 [INF] Application is shutting down...
+2025-08-06 12:03:36.327 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:03:36.363 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:03:36.363 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:03:36.363 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:04:19.049 +04:30 [INF] Application is shutting down...
+2025-08-06 12:04:31.213 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:04:31.270 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:04:31.270 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:04:31.270 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:06:40.501 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:06:40.547 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:06:40.548 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:06:40.548 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:08:10.023 +04:30 [INF] Application is shutting down...
+2025-08-06 12:08:37.616 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:08:37.655 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:08:37.656 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:08:37.656 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:09:11.523 +04:30 [INF] Application is shutting down...
+2025-08-06 12:09:14.819 +04:30 [INF] Now listening on: http://localhost:5000
+2025-08-06 12:09:14.849 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:09:14.850 +04:30 [INF] Hosting environment: Production
+2025-08-06 12:09:14.850 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:09:19.437 +04:30 [INF] Application is shutting down...
+2025-08-06 12:12:33.289 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:12:33.315 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:12:33.315 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:12:33.315 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:13:19.301 +04:30 [INF] Application is shutting down...
+2025-08-06 12:18:07.682 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:18:07.713 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:18:07.713 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:18:07.713 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:18:22.404 +04:30 [INF] Application is shutting down...
+2025-08-06 12:18:43.360 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:18:43.387 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:18:43.388 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:18:43.388 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:20:20.035 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:20:20.076 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:20:20.077 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:20:20.077 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:21:00.431 +04:30 [INF] Application is shutting down...
+2025-08-06 12:25:21.485 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:25:21.518 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:25:21.518 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:25:21.518 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:26:10.284 +04:30 [INF] Application is shutting down...
+2025-08-06 12:26:22.275 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:26:22.304 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:26:22.304 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:26:22.304 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:27:04.800 +04:30 [INF] Application is shutting down...
+2025-08-06 12:27:27.503 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:27:27.532 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:27:27.533 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:27:27.533 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:27:55.643 +04:30 [INF] Application is shutting down...
+2025-08-06 12:28:28.861 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:28:28.887 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:28:28.887 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:28:28.887 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-06 12:28:50.318 +04:30 [INF] Application is shutting down...
+2025-08-06 12:29:57.158 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:29:57.185 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:29:57.185 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:29:57.185 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject

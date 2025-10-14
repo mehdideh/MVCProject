@@ -1,0 +1,23 @@
+2025-08-05 13:04:09.640 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-05 13:04:09.664 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-05 13:04:09.665 +04:30 [INF] Hosting environment: Development
+2025-08-05 13:04:09.665 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-05 13:05:40.904 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-05 13:05:40.929 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-05 13:05:40.929 +04:30 [INF] Hosting environment: Development
+2025-08-05 13:05:40.929 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
+2025-08-05 13:05:50.631 +04:30 [INF] Request starting HTTP/1.1 POST http://localhost:5148/api/Employee/Create - application/json 56
+2025-08-05 13:05:50.645 +04:30 [WRN] Failed to determine the https port for redirect.
+2025-08-05 13:05:50.695 +04:30 [INF] Executing endpoint 'MVCProject.Controllers.EmployeeController.Create (MVCProject)'
+2025-08-05 13:05:50.718 +04:30 [INF] Route matched with {action = "Create", controller = "Employee"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Create(MVCProject.Models.Employee) on controller MVCProject.Controllers.EmployeeController (MVCProject).
+2025-08-05 13:05:50.820 +04:30 [INF] Employee Reza Created
+2025-08-05 13:05:51.504 +04:30 [INF] Executed DbCommand (25ms) [Parameters=[@p0='?' (Size = 50), @p1='?' (Size = 8), @p2='?' (DbType = Boolean)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Employees] ([Name], [PersonnelCode], [isDeleted])
+OUTPUT INSERTED.[Id]
+VALUES (@p0, @p1, @p2);
+2025-08-05 13:05:51.537 +04:30 [INF] Executing OkObjectResult, writing value of type 'MVCProject.Models.Employee'.
+2025-08-05 13:05:51.544 +04:30 [INF] Executed action MVCProject.Controllers.EmployeeController.Create (MVCProject) in 823.1934ms
+2025-08-05 13:05:51.546 +04:30 [INF] Executed endpoint 'MVCProject.Controllers.EmployeeController.Create (MVCProject)'
+2025-08-05 13:05:51.553 +04:30 [INF] Request finished HTTP/1.1 POST http://localhost:5148/api/Employee/Create - 200 null application/json; charset=utf-8 923.2968ms

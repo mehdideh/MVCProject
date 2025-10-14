@@ -1,0 +1,4 @@
+2025-08-06 12:00:03.468 +04:30 [INF] Now listening on: http://localhost:5148
+2025-08-06 12:00:03.497 +04:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-08-06 12:00:03.498 +04:30 [INF] Hosting environment: Development
+2025-08-06 12:00:03.498 +04:30 [INF] Content root path: C:\Users\mahdi\Desktop\MVCProject\MVCProject
