@@ -16,10 +16,12 @@ public class LeaveType : ControllerBase
 {
     private readonly ILogger<LeaveType> _logger;
     private readonly AppDbContext _context;
-    public LeaveType(AppDbContext context,ILogger<LeaveType> logger)
+    private readonly Services.Services _leaveservices;
+    public LeaveType(AppDbContext context,ILogger<LeaveType> logger , Services.Services leaveservices)
     {
         _logger = logger;
         _context = context;
+        _leaveservices = leaveservices;
     }
     [HttpGet]
     [SwaggerOperation(Summary = "Return List of Employees", Description = "return List of Employees")]
@@ -29,7 +31,7 @@ public class LeaveType : ControllerBase
     {
         _logger.LogInformation("Entered GetAll Method");
         var LeaveTypeList = await _context.LeaveTypes.ToListAsync();
-        if (LeaveTypeList != null)
+        if (LeaveTypeList.Any())
         {
             _logger.LogInformation("Returned LeaveType List");
 
@@ -42,13 +44,13 @@ public class LeaveType : ControllerBase
     [HttpPost("Create")]
     [SwaggerOperation(Summary = "Create New Leave Type")]
     [SwaggerResponse(409, "if Leave Type Was Exists")]
-    [SwaggerResponse(201,"if Leave Type Created Successfully")]
+    [SwaggerResponse(201, "if Leave Type Created Successfully")]
     public async Task<IActionResult> Create(CreateLeaveTypeDto dto)
     {
         if (await _context.LeaveTypes.AnyAsync(e => e.Type == dto.Type) || dto == null)
         {
             return Conflict("Leave Type Was Exists");
-                          
+
         }
         else
         {
@@ -57,8 +59,16 @@ public class LeaveType : ControllerBase
                 Type = dto.Type
             };
             await _context.LeaveTypes.AddAsync(newLeaveType);
+            await _context.SaveChangesAsync();
             return CreatedAtAction("GetAll", dto);
         }
+    }
+    
+    [HttpGet("find-leave-type-id")]
+    public async Task<ActionResult<Guid>> FindLeaveTypeId(string type)
+    {
+        var id = await _leaveservices.GetLeaveTypeIdAsync(type);
+        return id.HasValue ? Ok(id.Value) : NotFound("چنین نوع مرخصی پیدا نشد");
     }
 
 

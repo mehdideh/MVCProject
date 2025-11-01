@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.Caching.Memory;
 using MVCProject.Data;
 using MVCProject.Dtos;
 using MVCProject.Models;
 using Swashbuckle.AspNetCore.Annotations;
+using MVCProject.Services;
 namespace MVCProject.Controllers;
 
 [ApiController]
@@ -16,37 +18,63 @@ public class EmployeeLeave : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly ILogger<EmployeeLeave> _logger;
-    public EmployeeLeave(AppDbContext context , ILogger<EmployeeLeave> logger)
+    private readonly IMemoryCache _cache;
+    private readonly Services.Services _leaveService;
+
+
+    private const string CacheKey = "EmployeeLeaveAll";
+    public EmployeeLeave(AppDbContext context, ILogger<EmployeeLeave> logger, IMemoryCache cache,Services.Services leaveService)
     {
         _context = context;
         _logger = logger;
+        _cache = cache;
+        _leaveService = leaveService;
     }
 
     [HttpGet]
     [SwaggerOperation(Summary = "Return List of Employees", Description = "return List of Employees")]
     [SwaggerResponse(200, "Return List of Employee leave Records")]
-    [SwaggerResponse(404,"if EmployeesLeave List is Empty")]
-    public async Task<IActionResult> GetAll()
+    [SwaggerResponse(404, "if EmployeesLeave List is Empty")]
+    public async Task<ActionResult<List<ReturnEmployeeLeaveDto>>> GetAll()
     {
         _logger.LogInformation("Entered GetAll Method");
+        if (_cache.TryGetValue(CacheKey, out List<ReturnEmployeeLeaveDto> list))
+            return Ok(list);
 
-        var EmpLeaveList = await _context.Employeeleaves.ToListAsync();
-        if (string.IsNullOrWhiteSpace(EmpLeaveList.ToString()))
+        var EmpLeaveList = await _context.Employeeleaves.Where(e => e.isDeleted == false).Select(e => new ReturnEmployeeLeaveDto
+        {
+            StartDate = e.StartDate,
+            EndDate = e.EndDate,
+            LeaveTypeName = e.LeaveTypeName,
+            Duration = e.Duration
+        }).ToListAsync();
+        if (!EmpLeaveList.Any())
         {
             return NotFound("No Record Created");
         }
+        var opt = new MemoryCacheEntryOptions()
+        .SetAbsoluteExpiration(TimeSpan.FromMinutes(5))
+        .SetSlidingExpiration(TimeSpan.FromMinutes(1));
+
+        _cache.Set(CacheKey, EmpLeaveList, opt);
         return Ok(EmpLeaveList);
     }
     [HttpGet("{id}")]
     [SwaggerOperation(Summary = "Return Employee Leave with Specified Id")]
     [SwaggerResponse(200, "Return List of Employee Leave")]
     [SwaggerResponse(404, "if Employee Leave List is Empty")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<ActionResult<ReturnEmployeeLeaveDto>> GetById(Guid id)
     {
-        var EmpLeave = await _context.Employeeleaves.FirstOrDefaultAsync(e => e.Id == id);
-        if (EmpLeave != null)
+        var EmpLeaveList = await _context.Employeeleaves.Where(e => e.isDeleted == false && e.Id == id).Select(e => new ReturnEmployeeLeaveDto
         {
-            return Ok(EmpLeave);
+            StartDate = e.StartDate,
+            EndDate = e.EndDate,
+            LeaveTypeName = e.LeaveTypeName,
+            Duration = e.Duration
+        }).FirstOrDefaultAsync();
+        if (EmpLeaveList != null)
+        {
+            return Ok(EmpLeaveList);
         }
         return NotFound("Record Not Found");
     }
@@ -55,12 +83,19 @@ public class EmployeeLeave : ControllerBase
     [SwaggerOperation(Summary = "Return All Employee Leave with PersonnelCode")]
     [SwaggerResponse(200, "Return List of Employee Leave")]
     [SwaggerResponse(404, "if Employee Leave List is Empty")]
-    public async Task<IActionResult> GetByPCode(string _personnelcode)
+    public async Task<ActionResult<List<ReturnEmployeeLeaveDto>>> GetByPCode(string _personnelcode)
     {
-        var EmpLeave = await _context.Employeeleaves.Where(e => e.Employee.PersonnelCode == _personnelcode).ToListAsync();
-        if (EmpLeave != null)
+        var EmpLeaveList = await _context.Employeeleaves.Where(e => e.isDeleted == false && e.Employee.PersonnelCode == _personnelcode).Select(e => new ReturnEmployeeLeaveDto
         {
-            return Ok(EmpLeave);
+            Id = e.Id,
+            StartDate = e.StartDate,
+            EndDate = e.EndDate,
+            LeaveTypeName = e.LeaveTypeName,
+            Duration = e.Duration
+        }).ToListAsync();
+        if (EmpLeaveList.Any())
+        {
+            return Ok(EmpLeaveList);
         }
         return NotFound("Record Not Found");
     }
@@ -68,53 +103,89 @@ public class EmployeeLeave : ControllerBase
     [HttpPost("Create")]
     [SwaggerOperation(Summary = "Create Employee Leave Record")]
     [SwaggerResponse(201, "if Employee Leave Record Create Successfully")]
-    
-    public async Task<IActionResult> Create(CreateEmpLeaveDto dto)
+
+    public async Task<ActionResult<ReturnEmployeeLeaveDto>> Create(CreateEmpLeaveDto dto)
     {
         _logger.LogInformation("Entered The Create Method");
         var Emp = await _context.Employees.FirstOrDefaultAsync(e => e.PersonnelCode == dto.PersonnelCode);
         var leavetype = await _context.LeaveTypes.FirstOrDefaultAsync(e => e.Id == dto.LeaveTypeId);
-
+        if (Emp == null || leavetype == null)
+        {
+            return NotFound("Employee or Leave Type Not Found");
+        }
+        if(dto.EndDate <= dto.StartDate)
+        {
+            return BadRequest("زمان پایان مرخصی نمیتواند قبل از شروع مرخصی باشد");
+        }
         var EmpLeaveObject = new Models.EmployeeLeave
+        {
+            Id = Guid.NewGuid(),
+            isDeleted = false,
+            EmployeeId = Emp.Id,
+            LeaveTypeId = dto.LeaveTypeId,
+            LeaveTypeName = leavetype.Type,
+            Duration = dto.Duration,
+            StartDate = dto.StartDate,
+            EndDate = dto.EndDate
+
+        };
+        var Result = new ReturnEmployeeLeaveDto
         {
             EmployeeId = Emp.Id,
             LeaveTypeId = dto.LeaveTypeId,
-            LeaveTypeName = leavetype,
+            LeaveTypeName = leavetype.Type,
             Duration = dto.Duration,
-            StartDate = DateTime.UtcNow
+            StartDate = dto.StartDate,
+            EndDate = dto.EndDate
         };
-        _logger.LogInformation($"Object {dto.PersonnelCode} Created");
+        _logger.LogInformation($"Object {EmpLeaveObject.Id} Created");
         await _context.Employeeleaves.AddAsync(EmpLeaveObject);
         await _context.SaveChangesAsync();
-        return CreatedAtAction("GetById",new { id = EmpLeaveObject.Id });
+        _cache.Remove("EmployeeLeaveAll");
+        return CreatedAtAction("GetById", new { id = EmpLeaveObject.Id }, Result);
 
     }
 
     [HttpPatch("Update/{id}")]
     [SwaggerOperation(Summary = "Update Employee Leave Record With Specified Id")]
     [SwaggerResponse(200, "if Employee Leave Record Update Successfully")]
-    [SwaggerResponse(404,"if Employee Leave with specified Id Was Not Exists")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateEmployeeLeaveDto dto)
+    [SwaggerResponse(404, "if Employee Leave with specified Id Was Not Exists")]
+    public async Task<IActionResult> Update(Guid id,UpdateEmployeeLeaveDto dto)
     {
-        
+
         _logger.LogInformation("Entered The Update Method");
         var EmpLeave = await _context.Employeeleaves.FirstOrDefaultAsync(e => e.Id == id);
+        
         if (EmpLeave == null)
         {
             return NotFound("Not Found");
         }
+
+        if (dto.LeaveTypeId != null && dto.Duration != null && dto.StartDate != null && dto.EndDate != null && string.IsNullOrWhiteSpace(dto.LeaveTypeName))
+        {
+            EmpLeave.LeaveTypeId = dto.LeaveTypeId;
+            EmpLeave.Duration = dto.Duration;
+            EmpLeave.StartDate = dto.StartDate;
+            EmpLeave.EndDate = dto.EndDate;
+            EmpLeave.LeaveTypeName = dto.LeaveTypeName;
+
+            _logger.LogInformation($"Record {id} Updated");
+            await _context.SaveChangesAsync();
+            _cache.Remove("EmployeeLeaveAll");
+            var Result = new ReturnEmployeeLeaveDto
+        {
+            EmployeeId = EmpLeave.Id,
+            LeaveTypeId = EmpLeave.LeaveTypeId,
+            LeaveTypeName = EmpLeave.LeaveTypeName,
+            Duration = EmpLeave.Duration,
+            StartDate = EmpLeave.StartDate,
+            EndDate = EmpLeave.EndDate
+        };
+            return Ok(Result);
         
-        if (dto.LeaveTypeId != null)
-        {
-            EmpLeave.LeaveTypeId = dto.LeaveTypeId.Value;
         }
-        if (dto.Duration != null)
-        {
-            EmpLeave.Duration = dto.Duration.Value;
-        }
-        _logger.LogInformation($"Record {id} Updated");
-        await _context.SaveChangesAsync();
-        return Ok(EmpLeave);
+        return BadRequest();
+        
 
 
     }
@@ -122,19 +193,30 @@ public class EmployeeLeave : ControllerBase
     [HttpDelete("Delete/{id}")]
     [SwaggerOperation(Summary = "Return List of Employees", Description = "return List of Employees")]
     [SwaggerResponse(204, "if Employee Leave Record Delete Successfully")]
-    [SwaggerResponse(404,"if Employee Leave Record With Specified Id Was Not Exists")]
+    [SwaggerResponse(404, "if Employee Leave Record With Specified Id Was Not Exists")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var Empleave = await _context.Employeeleaves.FirstOrDefaultAsync(e => e.Id == id);
+        var Empleave = await _context.Employeeleaves.FirstOrDefaultAsync(e => e.Id == id && e.isDeleted == false);
         if (Empleave == null)
         {
             return NotFound("Not Found!");
         }
-        _context.Employeeleaves.Remove(Empleave);
+        Empleave.isDeleted = true;
         await _context.SaveChangesAsync();
+        _cache.Remove("EmployeeLeaveAll");
         return NoContent();
     }
 
+    
 
-   
+    [HttpGet("find-leave-id")]
+    public async Task<ActionResult<Guid>> FindEmployeeLeaveId(FindLeaveIdDto dto)
+    {
+        var id = await _leaveService.GetEmpLeaveIdAsync(dto);
+        return id.HasValue ? Ok(id.Value) : NotFound("رکورد مرخصی پیدا نشد");
+    }
+
+
+
+
 }

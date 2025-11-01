@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\mahdi\\Desktop\\MVCProject\\MVCProject\\MVCProject.csproj": {}
+    "C:\\Users\\mahdi\\Desktop\\MVCProject\\MVCProject.csproj": {}
   },
   "projects": {
-    "C:\\Users\\mahdi\\Desktop\\MVCProject\\MVCProject\\MVCProject.csproj": {
+    "C:\\Users\\mahdi\\Desktop\\MVCProject\\MVCProject.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mahdi\\Desktop\\MVCProject\\MVCProject\\MVCProject.csproj",
+        "projectUniqueName": "C:\\Users\\mahdi\\Desktop\\MVCProject\\MVCProject.csproj",
         "projectName": "MVCProject",
-        "projectPath": "C:\\Users\\mahdi\\Desktop\\MVCProject\\MVCProject\\MVCProject.csproj",
+        "projectPath": "C:\\Users\\mahdi\\Desktop\\MVCProject\\MVCProject.csproj",
         "packagesPath": "C:\\Users\\mahdi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mahdi\\Desktop\\MVCProject\\MVCProject\\obj\\",
+        "outputPath": "C:\\Users\\mahdi\\Desktop\\MVCProject\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"

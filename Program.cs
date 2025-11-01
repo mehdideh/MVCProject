@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MVCProject.Data;
+using MVCProject.Services;
 using Serilog;
 using Swashbuckle.AspNetCore.Annotations;
 // Log.Logger = new LoggerConfiguration()
@@ -14,7 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddMemoryCache();
 builder.Services.AddSwaggerGen(c =>
 {
     c.EnableAnnotations();
@@ -24,7 +25,7 @@ builder.Services.AddSwaggerGen(c =>
 //builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
-
+builder.Services.AddScoped<Services>();
 var app = builder.Build();
 
 //app.UseMiddleware<MVCProject.Middlewares.ExceptionHandler>();
