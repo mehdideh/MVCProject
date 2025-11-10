@@ -10,6 +10,7 @@ using MVCProject.Dtos;
 using MVCProject.Models;
 using Swashbuckle.AspNetCore.Annotations;
 using MVCProject.Services;
+using SQLitePCL;
 namespace MVCProject.Controllers;
 
 [ApiController]
@@ -23,7 +24,7 @@ public class EmployeeLeave : ControllerBase
 
 
     private const string CacheKey = "EmployeeLeaveAll";
-    public EmployeeLeave(AppDbContext context, ILogger<EmployeeLeave> logger, IMemoryCache cache,Services.Services leaveService)
+    public EmployeeLeave(AppDbContext context, ILogger<EmployeeLeave> logger, IMemoryCache cache, Services.Services leaveService)
     {
         _context = context;
         _logger = logger;
@@ -113,7 +114,7 @@ public class EmployeeLeave : ControllerBase
         {
             return NotFound("Employee or Leave Type Not Found");
         }
-        if(dto.EndDate <= dto.StartDate)
+        if (dto.EndDate < dto.StartDate)
         {
             return BadRequest("زمان پایان مرخصی نمیتواند قبل از شروع مرخصی باشد");
         }
@@ -150,12 +151,12 @@ public class EmployeeLeave : ControllerBase
     [SwaggerOperation(Summary = "Update Employee Leave Record With Specified Id")]
     [SwaggerResponse(200, "if Employee Leave Record Update Successfully")]
     [SwaggerResponse(404, "if Employee Leave with specified Id Was Not Exists")]
-    public async Task<IActionResult> Update(Guid id,UpdateEmployeeLeaveDto dto)
+    public async Task<IActionResult> Update(Guid id, UpdateEmployeeLeaveDto dto)
     {
 
         _logger.LogInformation("Entered The Update Method");
         var EmpLeave = await _context.Employeeleaves.FirstOrDefaultAsync(e => e.Id == id);
-        
+
         if (EmpLeave == null)
         {
             return NotFound("Not Found");
@@ -173,19 +174,19 @@ public class EmployeeLeave : ControllerBase
             await _context.SaveChangesAsync();
             _cache.Remove("EmployeeLeaveAll");
             var Result = new ReturnEmployeeLeaveDto
-        {
-            EmployeeId = EmpLeave.Id,
-            LeaveTypeId = EmpLeave.LeaveTypeId,
-            LeaveTypeName = EmpLeave.LeaveTypeName,
-            Duration = EmpLeave.Duration,
-            StartDate = EmpLeave.StartDate,
-            EndDate = EmpLeave.EndDate
-        };
+            {
+                EmployeeId = EmpLeave.Id,
+                LeaveTypeId = EmpLeave.LeaveTypeId,
+                LeaveTypeName = EmpLeave.LeaveTypeName,
+                Duration = EmpLeave.Duration,
+                StartDate = EmpLeave.StartDate,
+                EndDate = EmpLeave.EndDate
+            };
             return Ok(Result);
-        
+
         }
         return BadRequest();
-        
+
 
 
     }
@@ -207,15 +208,62 @@ public class EmployeeLeave : ControllerBase
         return NoContent();
     }
 
-    
 
-    [HttpGet("find-leave-id")]
+
+    [HttpPost("find-leave-id")]
     public async Task<ActionResult<Guid>> FindEmployeeLeaveId(FindLeaveIdDto dto)
     {
         var id = await _leaveService.GetEmpLeaveIdAsync(dto);
         return id.HasValue ? Ok(id.Value) : NotFound("رکورد مرخصی پیدا نشد");
     }
 
+
+    [HttpGet("summary/{personnelCode}")]
+    [SwaggerOperation(Summary = "خلاصه مرخصی کارمند بر اساس کد پرسنلی")]
+    [SwaggerResponse(200, "خلاصه مرخصی")]
+    [SwaggerResponse(404, "کارمند یا مرخصی پیدا نشد")]
+    public async Task<ActionResult<EmployeeLeaveSummaryDto>> GetLeaveSummary(string personnelCode)
+    {
+        var employee = await _context.Employees
+            .Where(e => e.PersonnelCode == personnelCode && !e.isDeleted)
+            .FirstOrDefaultAsync();
+
+        if (employee == null)
+            return NotFound("کارمند پیدا نشد.");
+
+        var leaves = await _context.Employeeleaves
+            .Where(l => l.Employee.PersonnelCode == personnelCode && !l.isDeleted)
+            .Select(l => new
+            {
+                l.LeaveTypeName,
+                l.Duration
+            })
+            .ToListAsync();
+
+        if (!leaves.Any())
+            return NotFound("هیچ مرخصی ثبت نشده.");
+
+        var summary = leaves
+            .GroupBy(l => l.LeaveTypeName)
+            .Select(g => new LeaveSummaryItemDto
+            {
+                LeaveType = g.Key,
+                Count = g.Count(),
+                TotalDuration = g.Sum(x => x.Duration),
+                Unit = g.Key.Contains("ساعتی") ? "ساعت" : "روز"
+            })
+            .OrderBy(s => s.LeaveType)
+            .ToList();
+
+        var result = new EmployeeLeaveSummaryDto
+        {
+            PersonnelCode = personnelCode,
+            EmployeeName = employee.Name,
+            Summary = summary
+        };
+
+        return Ok(result);
+    }
 
 
 

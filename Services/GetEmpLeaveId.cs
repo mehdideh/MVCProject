@@ -29,4 +29,5 @@ public class Services
         var leaveId = await _context.LeaveTypes.FirstOrDefaultAsync(e => e.Type == leaveTypeName && !e.isDeleted);
         return leaveId?.Id;
     }
+    
 }

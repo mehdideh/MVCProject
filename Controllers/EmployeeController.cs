@@ -108,6 +108,7 @@ public class EmployeeController : ControllerBase
     {
         var Emp = await _context.Employees.Where(e => e.PersonnelCode == _personnelcode && e.isDeleted == false).Select(e => new ReturnEmployeeDto
         {
+            EmployeeId = e.Id,
             Name = e.Name,
             PersonnelCode = e.PersonnelCode,
             PhoneNumber = e.PhoneNumber,

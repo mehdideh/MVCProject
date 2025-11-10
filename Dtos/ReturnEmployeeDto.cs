@@ -4,6 +4,8 @@ namespace MVCProject.Dtos;
 public class ReturnEmployeeDto
 {
     
+    public Guid? EmployeeId { get; set; }
+    
     [Required]
     public string PersonnelCode { get; set; }
     
